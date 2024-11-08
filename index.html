@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA TLX - Mental Workload Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .scale {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        .scale-label {
+            width: 150px;
+            flex-shrink: 0;
+        }
+        .scale-container {
+            flex-grow: 1;
+            position: relative;
+        }
+        .scale input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .scale-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .description {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+        }
+        .rankings {
+            margin: 20px 0;
+        }
+        .ranking-pair {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #darkModeToggle {
+            background: none;
+            border: 1px solid #007bff;
+            color: #007bff;
+        }
+        .dark-mode {
+            background-color: #222;
+            color: #f1f1f1;
+        }
+        .dark-mode .ranking-pair {
+            border-color: #444;
+        }
+        .dark-mode .description {
+            color: #aaa;
+        }
+        .dark-mode button {
+            background-color: #444;
+        }
+        .dark-mode #darkModeToggle {
+            border-color: #f1f1f1;
+            color: #f1f1f1;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .dark-mode .results {
+            background-color: #333;
+        }
+        .score-display {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .score-display input {
+            margin-left: 10px;
+            padding: 5px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="page1">
+        <h1>NASA-TLX Mental Workload Assessment</h1>
+        
+        <form id="nasaTLXForm">
+            <div class="scale">
+                <div class="scale-label">Mental Demand</div>
+                <div class="scale-container">
+                    <input type="range" id="mental" min="0" max="100" step="1" value="50">
+                    <div class="scale-values"><span>Low</span><span>High</span></div>
+                    <div class="description">How much mental and perceptual activity was required?</div>
+                </div>
+            </div>
+
+            <div class="scale">
+                <div class="scale-label">Physical Demand</div>
+                <div class="scale-container">
+                    <input type="range" id="physical" min="0" max="100" step="1" value="50">
+                    <div class="scale-values"><span>Low</span><span>High</span></div>
+                    <div class="description">How much physical activity was required?</div>
+                </div>
+            </div>
+
+            <div class="scale">
+                <div class="scale-label">Temporal Demand</div>
+                <div class="scale-container">
+                    <input type="range" id="temporal" min="0" max="100" step="1" value="50">
+                    <div class="scale-values"><span>Low</span><span>High</span></div>
+                    <div class="description">How much time pressure did you feel?</div>
+                </div>
+            </div>
+
+            <div class="scale">
+                <div class="scale-label">Performance</div>
+                <div class="scale-container">
+                    <input type="range" id="performance" min="0" max="100" step="1" value="50">
+                    <div class="scale-values"><span>Low</span><span>High</span></div>
+                    <div class="description">How successful were you in accomplishing the goals?</div>
+                </div>
+            </div>
+
+            <div class="scale">
+                <div class="scale-label">Effort</div>
+                <div class="scale-container">
+                    <input type="range" id="effort" min="0" max="100" step="1" value="50">
+                    <div class="scale-values"><span>Low</span><span>High</span></div>
+                    <div class="description">How hard did you have to work?</div>
+                </div>
+            </div>
+
+            <div class="scale">
+                <div class="scale-label">Frustration</div>
+                <div class="scale-container">
+                    <input type="range" id="frustration" min="0" max="100" step="1" value="50">
+                    <div class="scale-values"><span>Low</span><span>High</span></div>
+                    <div class="description">How stressed or annoyed were you?</div>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="button" onclick="goToRankingPage()">Next</button>
+                <button type="button" id="darkModeToggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="page2" style="display: none;">
+        <h2>Workload Ranking</h2>
+        <div class="instructions">
+            <p>For each pair, select the factor that contributed more to the workload:</p>
+        </div>
+
+        <form id="rankingForm">
+            <div class="rankings">
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair1" value="mental" required> Mental Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair1" value="physical"> Physical Demand
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair2" value="mental" required> Mental Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair2" value="temporal"> Temporal Demand
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair3" value="mental" required> Mental Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair3" value="performance"> Performance
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair4" value="mental" required> Mental Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair4" value="effort"> Effort
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair5" value="mental" required> Mental Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair5" value="frustration"> Frustration
+                    </label>
+                </div>
+
+                <!-- Additional pairs -->
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair6" value="physical" required> Physical Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair6" value="temporal"> Temporal Demand
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair7" value="physical" required> Physical Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair7" value="performance"> Performance
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair8" value="physical" required> Physical Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair8" value="effort"> Effort
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair9" value="physical" required> Physical Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair9" value="frustration"> Frustration
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair10" value="temporal" required> Temporal Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair10" value="performance"> Performance
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair11" value="temporal" required> Temporal Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair11" value="frustration"> Frustration
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair12" value="temporal" required> Temporal Demand
+                    </label>
+                    <label>
+                        <input type="radio" name="pair12" value="effort"> Effort
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair13" value="performance" required> Performance
+                    </label>
+                    <label>
+                        <input type="radio" name="pair13" value="frustration"> Frustration
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair14" value="performance" required> Performance
+                    </label>
+                    <label>
+                        <input type="radio" name="pair14" value="effort"> Effort
+                    </label>
+                </div>
+
+                <div class="ranking-pair">
+                    <label>
+                        <input type="radio" name="pair15" value="frustration" required> Frustration
+                    </label>
+                    <label>
+                        <input type="radio" name="pair15" value="effort"> Effort
+                    </label>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="button" onclick="calculateScores()">Calculate Scores</button>
+                <button type="button" onclick="goBack()">Back</button>
+            </div>
+
+            <div class="results">
+                <div class="score-display">
+                    <label>Total Un-weighted Mental Workload Score:</label>
+                    <input type="text" id="unWeightedScore" readonly>
+                </div>
+                <div class="score-display">
+                    <label>Total Weighted Mental Workload Score:</label>
+                    <input type="text" id="weightedScore" readonly>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function goToRankingPage() {
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'block';
+        }
+
+        function goBack() {
+            document.getElementById('page1').style.display = 'block';
+            document.getElementById('page2').style.display = 'none';
+        }
+
+        function calculateScores() {
+            // Calculate unweighted score
+            const factors = ['mental', 'physical', 'temporal', 'performance', 'effort', 'frustration'];
+            let sum = 0;
+            factors.forEach(factor => {
+                sum += parseInt(document.getElementById(factor).value);
+            });
+            const unweightedScore = (sum / factors.length).toFixed(2);
+
+            // Calculate weighted score
+            const weights = {};
+            factors.forEach(factor => weights[factor] = 0);
+
+            // Count selections for each factor
+            for (let i = 1; i <= 15; i++) {
+                const selected = document.querySelector(`input[name="pair${i}"]:checked`);
+                if (selected) {
+                    weights[selected.value]++;
+                }
+            }
+
+            // Calculate weighted sum
+            let weightedSum = 0;
+            factors.forEach(factor => {
+                const weight = weights[factor] / 15;
+                const rating = parseInt(document.getElementById(factor).value);
+                weightedSum += weight * rating;
+            });
+
+            // Display results
+            document.getElementById('unWeightedScore').value = unweightedScore;
+            document.getElementById('weightedScore').value = weightedSum.toFixed(2);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+    </script>
+</body>
+</html>
