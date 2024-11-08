@@ -198,7 +198,7 @@
 
                 <div class="ranking-pair">
                     <label>
-                        <input type="radio" name="pair2" value="mental" required> Mental Demand
+                        <input type="radio" name="pair2" value="mental" required> Mental Demand  
                     </label>
                     <label>
                         <input type="radio" name="pair2" value="temporal"> Temporal Demand
@@ -232,7 +232,6 @@
                     </label>
                 </div>
 
-                <!-- Additional pairs -->
                 <div class="ranking-pair">
                     <label>
                         <input type="radio" name="pair6" value="physical" required> Physical Demand
@@ -247,7 +246,7 @@
                         <input type="radio" name="pair7" value="physical" required> Physical Demand
                     </label>
                     <label>
-                        <input type="radio" name="pair7" value="performance"> Performance
+                        <input type="radio" name="pair7" value="performance"> Performance 
                     </label>
                 </div>
 
@@ -310,7 +309,7 @@
                         <input type="radio" name="pair14" value="performance" required> Performance
                     </label>
                     <label>
-                        <input type="radio" name="pair14" value="effort"> Effort
+                        <input type="radio" name="pair14" value="effort"> Effort  
                     </label>
                 </div>
 
@@ -325,70 +324,112 @@
             </div>
 
             <div class="button-container">
-                <button type="button" onclick="calculateScores()">Calculate Scores</button>
-                <button type="button" onclick="goBack()">Back</button>
-            </div>
-
-            <div class="results">
-                <div class="score-display">
-                    <label>Total Un-weighted Mental Workload Score:</label>
-                    <input type="text" id="unWeightedScore" readonly>
-                </div>
-                <div class="score-display">
-                    <label>Total Weighted Mental Workload Score:</label>
-                    <input type="text" id="weightedScore" readonly>
-                </div>
+                <button type="button" onclick="goToPage1()">Back</button>
+                <button type="button" onclick="calculateScore()">Calculate Score</button>
             </div>
         </form>
     </div>
 
+    <div id="results" class="results" style="display: none;">
+        <div class="score-display">
+            <label>Total Unweighted Mental Workload Score:</label>
+            <input type="text" id="unWeightedScore" readonly>
+        </div>
+        <div class="score-display">
+            <label>Total Weighted Mental Workload Score:</label>
+            <input type="text" id="weightedScore" readonly>
+        </div>
+        <div class="button-container">
+            <button type="button" onclick="resetForm()">Reset</button>
+        </div>
+    </div>
+
     <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+        }
+
         function goToRankingPage() {
-            document.getElementById('page1').style.display = 'none';
-            document.getElementById('page2').style.display = 'block';
+            document.getElementById("page1").style.display = "none";
+            document.getElementById("page2").style.display = "block";
         }
 
-        function goBack() {
-            document.getElementById('page1').style.display = 'block';
-            document.getElementById('page2').style.display = 'none';
+        function goToPage1() {
+            document.getElementById("page2").style.display = "none";
+            document.getElementById("page1").style.display = "block";
         }
 
-        function calculateScores() {
-            // Calculate unweighted score
-            const factors = ['mental', 'physical', 'temporal', 'performance', 'effort', 'frustration'];
-            let sum = 0;
-            factors.forEach(factor => {
-                sum += parseInt(document.getElementById(factor).value);
-            });
-            const unweightedScore = (sum / factors.length).toFixed(2);
+        function calculateScore() {
+            const mentalDemand = parseInt(document.getElementById("mental").value);
+            const physicalDemand = parseInt(document.getElementById("physical").value);
+            const temporalDemand = parseInt(document.getElementById("temporal").value);
+            const performanceDemand = parseInt(document.getElementById("performance").value);
+            const effortDemand = parseInt(document.getElementById("effort").value);
+            const frustrationDemand = parseInt(document.getElementById("frustration").value);
 
-            // Calculate weighted score
-            const weights = {};
-            factors.forEach(factor => weights[factor] = 0);
+            const unWeightedScore = (mentalDemand + physicalDemand + temporalDemand + performanceDemand + effortDemand + frustrationDemand) / 6;
+            document.getElementById("unWeightedScore").value = unWeightedScore.toFixed(2);
 
-            // Count selections for each factor
-            for (let i = 1; i <= 15; i++) {
-                const selected = document.querySelector(`input[name="pair${i}"]:checked`);
-                if (selected) {
-                    weights[selected.value]++;
+            const rankings = document.getElementById("rankingForm").elements;
+            let mentalRank = 0;
+            let physicalRank = 0;
+            let temporalRank = 0;
+            let performanceRank = 0;
+            let effortRank = 0;
+            let frustrationRank = 0;
+
+            for (let i = 0; i < rankings.length; i++) {
+                if (rankings[i].checked) {
+                    switch (rankings[i].value) {
+                        case "mental":
+                            mentalRank++;
+                            break;
+                        case "physical":
+                            physicalRank++;
+                            break;
+                        case "temporal":
+                            temporalRank++;
+                            break;
+                        case "performance":
+                            performanceRank++;
+                            break;
+                        case "effort":
+                            effortRank++;
+                            break;
+                        case "frustration":
+                            frustrationRank++;
+                            break;
+                    }
                 }
             }
 
-            // Calculate weighted sum
-            let weightedSum = 0;
-            factors.forEach(factor => {
-                const weight = weights[factor] / 15;
-                const rating = parseInt(document.getElementById(factor).value);
-                weightedSum += weight * rating;
-            });
+            const weightedMentalScore = (mentalRank / 15) * mentalDemand;
+            const weightedPhysicalScore = (physicalRank / 15) * physicalDemand;
+            const weightedTemporalScore = (temporalRank / 15) * temporalDemand;
+            const weightedPerformanceScore = (performanceRank / 15) * performanceDemand;
+            const weightedEffortScore = (effortRank / 15) * effortDemand;
+            const weightedFrustrationScore = (frustrationRank / 15) * frustrationDemand;
 
-            // Display results
-            document.getElementById('unWeightedScore').value = unweightedScore;
-            document.getElementById('weightedScore').value = weightedSum.toFixed(2);
+            const weightedScore = weightedMentalScore + weightedPhysicalScore + weightedTemporalScore + weightedPerformanceScore + weightedEffortScore + weightedFrustrationScore;
+            document.getElementById("weightedScore").value = weightedScore.toFixed(2);
+
+            document.getElementById("page2").style.display = "none";
+            document.getElementById("results").style.display = "block";
+
+            logResults(unWeightedScore, weightedScore);
         }
 
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
+        function resetForm() {
+            document.getElementById("nasaTLXForm").reset();
+            document.getElementById("rankingForm").reset();
+            document.getElementById("results").style.display = "none";
+            document.getElementById("page1").style.display = "block";
+        }
+
+        function logResults(unWeightedScore, weightedScore) {
+            console.log("NASA-TLX Results:");
+            console.log("Unweighted Mental Workload Score: " + unWeightedScore.toFixed(2));
+            console.log("Weighted Mental Workload Score: " + weightedScore.toFixed(2));
         }
     </script>
 </body>
