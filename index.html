@@ -182,14 +182,25 @@
         </form>
     </div>
 
-    <div id="page2">
-        <h2>Workload Ranking</h2>
+    <div id="page2" style="display: none;">
+        <h2>Workload Rating - Pairwise Comparisons</h2>
         <div class="instructions">
-            <p>For each pair, select the factor that contributed more to the workload:</p>
+            <p>In this section, you will compare different workload factors in pairs. For each pair, select which factor contributed more significantly to the workload of the task.</p>
+            <p>There are 15 pairs in total, representing all possible combinations of the 6 workload factors:</p>
+            <ul>
+                <li>Mental Demand: How mentally demanding was the task?</li>
+                <li>Physical Demand: How physically demanding was the task?</li>
+                <li>Temporal Demand: How hurried or rushed was the pace of the task?</li>
+                <li>Performance: How successful were you in accomplishing the task?</li>
+                <li>Effort: How hard did you have to work to accomplish your level of performance?</li>
+                <li>Frustration: How insecure, discouraged, irritated, stressed, and annoyed were you?</li>
+            </ul>
+            <p>Your selections will be used to weight the importance of each factor in the final workload score calculation.</p>
         </div>
 
         <form id="rankingForm">
             <div class="rankings">
+                <!-- Mental Demand Comparisons (5 pairs) -->
                 <div class="ranking-pair">
                     <label>
                         <input type="radio" name="pair1" value="mental" required> Mental Demand
@@ -235,6 +246,7 @@
                     </label>
                 </div>
 
+                <!-- Physical Demand Comparisons (4 pairs) -->
                 <div class="ranking-pair">
                     <label>
                         <input type="radio" name="pair6" value="physical" required> Physical Demand
@@ -271,6 +283,7 @@
                     </label>
                 </div>
 
+                <!-- Temporal Demand Comparisons (3 pairs) -->
                 <div class="ranking-pair">
                     <label>
                         <input type="radio" name="pair10" value="temporal" required> Temporal Demand
@@ -298,6 +311,7 @@
                     </label>
                 </div>
 
+                <!-- Performance Comparisons (2 pairs) -->
                 <div class="ranking-pair">
                     <label>
                         <input type="radio" name="pair13" value="performance" required> Performance
@@ -316,6 +330,7 @@
                     </label>
                 </div>
 
+                <!-- Final Comparison (1 pair) -->
                 <div class="ranking-pair">
                     <label>
                         <input type="radio" name="pair15" value="frustration" required> Frustration
@@ -337,10 +352,12 @@
         <div class="score-display">
             <label>Total Unweighted Mental Workload Score:</label>
             <input type="text" id="unWeightedScore" readonly>
+            <p class="description">Simple average of all ratings (0-100)</p>
         </div>
         <div class="score-display">
             <label>Total Weighted Mental Workload Score:</label>
             <input type="text" id="weightedScore" readonly>
+            <p class="description">Weighted by importance based on pairwise comparisons (0-100)</p>
         </div>
         <div class="button-container">
             <button type="button" onclick="resetForm()">Reset</button>
@@ -353,6 +370,14 @@
         }
 
         function goToRankingPage() {
+            // Validate that all ratings are provided
+            const ratings = ["mental", "physical", "temporal", "performance", "effort", "frustration"];
+            for (const rating of ratings) {
+                if (!document.getElementById(rating).value) {
+                    alert("Please complete all ratings before proceeding");
+                    return;
+                }
+            }
             document.getElementById("page1").style.display = "none";
             document.getElementById("page2").style.display = "block";
         }
@@ -363,6 +388,15 @@
         }
 
         function calculateScore() {
+            // Validate that all pairwise comparisons are made
+            const form = document.getElementById("rankingForm");
+            const pairs = form.querySelectorAll('input[type="radio"]:checked').length;
+            if (pairs < 15) {
+                alert("Please complete all 15 pairwise comparisons before calculating the score");
+                return;
+            }
+
+            // Get raw ratings (0-100)
             const mentalDemand = parseInt(document.getElementById("mental").value);
             const physicalDemand = parseInt(document.getElementById("physical").value);
             const temporalDemand = parseInt(document.getElementById("temporal").value);
@@ -370,55 +404,48 @@
             const effortDemand = parseInt(document.getElementById("effort").value);
             const frustrationDemand = parseInt(document.getElementById("frustration").value);
 
-            const unWeightedScore = (mentalDemand + physicalDemand + temporalDemand + performanceDemand + effortDemand + frustrationDemand) / 6;
+            // Calculate unweighted score (simple average)
+            const unWeightedScore = (mentalDemand + physicalDemand + temporalDemand + 
+                                   performanceDemand + effortDemand + frustrationDemand) / 6;
             document.getElementById("unWeightedScore").value = unWeightedScore.toFixed(2);
 
+            // Count wins in pairwise comparisons
             const rankings = document.getElementById("rankingForm").elements;
-            let mentalRank = 0;
-            let physicalRank = 0;
-            let temporalRank = 0;
-            let performanceRank = 0;
-            let effortRank = 0;
-            let frustrationRank = 0;
+            let mentalRank = 0, physicalRank = 0, temporalRank = 0;
+            let performanceRank = 0, effortRank = 0, frustrationRank = 0;
 
             for (let i = 0; i < rankings.length; i++) {
                 if (rankings[i].checked) {
                     switch (rankings[i].value) {
-                        case "mental":
-                            mentalRank++;
-                            break;
-                        case "physical":
-                            physicalRank++;
-                            break;
-                        case "temporal":
-                            temporalRank++;
-                            break;
-                        case "performance":
-                            performanceRank++;
-                            break;
-                        case "effort":
-                            effortRank++;
-                            break;
-                        case "frustration":
-                            frustrationRank++;
-                            break;
+                        case "mental": mentalRank++; break;
+                        case "physical": physicalRank++; break;
+                        case "temporal": temporalRank++; break;
+                        case "performance": performanceRank++; break;
+                        case "effort": effortRank++; break;
+                        case "frustration": frustrationRank++; break;
                     }
                 }
             }
 
-            const weightedMentalScore = (mentalRank / 15) * mentalDemand;
-            const weightedPhysicalScore = (physicalRank / 15) * physicalDemand;
-            const weightedTemporalScore = (temporalRank / 15) * temporalDemand;
-            const weightedPerformanceScore = (performanceRank / 15) * performanceDemand;
-            const weightedEffortScore = (effortRank / 15) * effortDemand;
-            const weightedFrustrationScore = (frustrationRank / 15) * frustrationDemand;
+            // Calculate weighted scores using win counts as weights
+            const totalComparisons = 15;
+            const weightedMentalScore = (mentalRank / totalComparisons) * mentalDemand;
+            const weightedPhysicalScore = (physicalRank / totalComparisons) * physicalDemand;
+            const weightedTemporalScore = (temporalRank / totalComparisons) * temporalDemand;
+            const weightedPerformanceScore = (performanceRank / totalComparisons) * performanceDemand;
+            const weightedEffortScore = (effortRank / totalComparisons) * effortDemand;
+            const weightedFrustrationScore = (frustrationRank / totalComparisons) * frustrationDemand;
 
-            const weightedScore = weightedMentalScore + weightedPhysicalScore + weightedTemporalScore + weightedPerformanceScore + weightedEffortScore + weightedFrustrationScore;
+            // Calculate final weighted score
+            const weightedScore = weightedMentalScore + weightedPhysicalScore + weightedTemporalScore + 
+                                weightedPerformanceScore + weightedEffortScore + weightedFrustrationScore;
             document.getElementById("weightedScore").value = weightedScore.toFixed(2);
 
+            // Show results page
             document.getElementById("page2").style.display = "none";
             document.getElementById("results").style.display = "block";
 
+            // Log detailed results
             logResults(unWeightedScore, weightedScore);
         }
 
