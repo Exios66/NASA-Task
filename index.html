@@ -111,6 +111,9 @@
             padding: 5px;
             width: 100px;
         }
+        #page2 {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -121,7 +124,7 @@
             <div class="scale">
                 <div class="scale-label">Mental Demand</div>
                 <div class="scale-container">
-                    <input type="range" id="mental" min="0" max="100" step="1" value="50">
+                    <input type="range" id="mental" min="0" max="100" step="1" value="50" aria-label="Mental Demand">
                     <div class="scale-values"><span>Low</span><span>High</span></div>
                     <div class="description">How much mental and perceptual activity was required?</div>
                 </div>
@@ -130,7 +133,7 @@
             <div class="scale">
                 <div class="scale-label">Physical Demand</div>
                 <div class="scale-container">
-                    <input type="range" id="physical" min="0" max="100" step="1" value="50">
+                    <input type="range" id="physical" min="0" max="100" step="1" value="50" aria-label="Physical Demand">
                     <div class="scale-values"><span>Low</span><span>High</span></div>
                     <div class="description">How much physical activity was required?</div>
                 </div>
@@ -139,7 +142,7 @@
             <div class="scale">
                 <div class="scale-label">Temporal Demand</div>
                 <div class="scale-container">
-                    <input type="range" id="temporal" min="0" max="100" step="1" value="50">
+                    <input type="range" id="temporal" min="0" max="100" step="1" value="50" aria-label="Temporal Demand">
                     <div class="scale-values"><span>Low</span><span>High</span></div>
                     <div class="description">How much time pressure did you feel?</div>
                 </div>
@@ -148,7 +151,7 @@
             <div class="scale">
                 <div class="scale-label">Performance</div>
                 <div class="scale-container">
-                    <input type="range" id="performance" min="0" max="100" step="1" value="50">
+                    <input type="range" id="performance" min="0" max="100" step="1" value="50" aria-label="Performance">
                     <div class="scale-values"><span>Low</span><span>High</span></div>
                     <div class="description">How successful were you in accomplishing the goals?</div>
                 </div>
@@ -157,7 +160,7 @@
             <div class="scale">
                 <div class="scale-label">Effort</div>
                 <div class="scale-container">
-                    <input type="range" id="effort" min="0" max="100" step="1" value="50">
+                    <input type="range" id="effort" min="0" max="100" step="1" value="50" aria-label="Effort">
                     <div class="scale-values"><span>Low</span><span>High</span></div>
                     <div class="description">How hard did you have to work?</div>
                 </div>
@@ -166,7 +169,7 @@
             <div class="scale">
                 <div class="scale-label">Frustration</div>
                 <div class="scale-container">
-                    <input type="range" id="frustration" min="0" max="100" step="1" value="50">
+                    <input type="range" id="frustration" min="0" max="100" step="1" value="50" aria-label="Frustration">
                     <div class="scale-values"><span>Low</span><span>High</span></div>
                     <div class="description">How stressed or annoyed were you?</div>
                 </div>
@@ -179,7 +182,7 @@
         </form>
     </div>
 
-    <div id="page2" style="display: none;">
+    <div id="page2">
         <h2>Workload Ranking</h2>
         <div class="instructions">
             <p>For each pair, select the factor that contributed more to the workload:</p>
